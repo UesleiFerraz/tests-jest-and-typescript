@@ -4,6 +4,7 @@ import Database from "../../../../../src/core/infra/data/connections/database";
 import { Scrap } from "../../../../../src/features/scraps/domain";
 import { ScrapRepository } from "../../../../../src/features/scraps/infra";
 import { v4 as makeRandomUid } from "uuid";
+import { title } from "process";
 
 const makeUser = async (): Promise<User> => {
   return UserEntity.create({
@@ -138,6 +139,22 @@ describe("Scrap repository", () => {
       );
 
       expect(result).toBeNull();
+    });
+
+    it("Should return a scrap when database has scrap that match params", async () => {
+      const sut = new ScrapRepository();
+      const scrap = await makeScrap();
+
+      const result = (await sut.update(scrap.uid, {
+        title: scrap.title,
+        description: scrap.description,
+        userUid: scrap.userUid,
+      } as any)) as any;
+
+      expect(result).toBeTruthy();
+      expect(result.title).toEqual(scrap.title);
+      expect(result.description).toEqual(scrap.description);
+      expect(result.userUid).toEqual(scrap.userUid);
     });
   });
 });
