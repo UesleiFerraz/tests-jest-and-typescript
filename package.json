@@ -40,7 +40,7 @@
     "start": "node dist/server.js",
     "migration:run": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run",
     "migration:revert": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:revert",
-    "migration:run:test": "cross-env NODE_ENV=test yarn ts-node ./node_modules/typeorm/cli.js migration:run",
+    "migration:run:test": "docker-compose up -d && cross-env NODE_ENV=test yarn ts-node ./node_modules/typeorm/cli.js migration:run",
     "test:setup": "yarn migration:run:test",
     "test": "yarn test:setup && cross-env NODE_ENV=test yarn jest --watchAll --passWithNoTests --silent --noStackTrace --runInBand",
     "test:verbose": "yarn test:setup && cross-env NODE_ENV=test yarn jest --passWithNoTests --runInBand",
