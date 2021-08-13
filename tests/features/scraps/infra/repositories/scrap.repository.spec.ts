@@ -120,5 +120,13 @@ describe("Scrap repository", () => {
       expect(spy).toHaveBeenCalledWith("any_uid", "any_user_uid");
       expect(spy).toHaveBeenCalledTimes(1);
     });
+
+    it("Should return null when user has no scraps", async () => {
+      const sut = new ScrapRepository();
+      const user = await makeUser();
+      const result = await sut.getOne(user.uid, user.uid);
+
+      expect(result).toBeNull();
+    });
   });
 });
