@@ -110,7 +110,7 @@ describe("Scrap repository", () => {
       expect(result.userUid).toEqual(scrap.userUid);
     });
 
-    it("Should pass an userUid and an scrapUid as parameters when call this function", async () => {
+    it("Should pass an userUid and a scrapUid as parameters when call this function", async () => {
       const sut = new ScrapRepository();
       jest.spyOn(sut, "getOne").mockResolvedValue(null);
       const spy = jest.spyOn(sut, "getOne");
@@ -155,6 +155,18 @@ describe("Scrap repository", () => {
       expect(result.title).toEqual(scrap.title);
       expect(result.description).toEqual(scrap.description);
       expect(result.userUid).toEqual(scrap.userUid);
+    });
+
+    it("Should pass an userUid and a scrap as parameters when call this function", async () => {
+      const sut = new ScrapRepository();
+      jest.spyOn(sut, "update").mockResolvedValue(null);
+      const spy = jest.spyOn(sut, "update");
+      const params = await makeParams();
+
+      await sut.update("any_uid", params as any);
+
+      expect(spy).toHaveBeenCalledWith("any_uid", params);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 });
