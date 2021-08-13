@@ -53,7 +53,7 @@ describe("Scrap repository", () => {
   });
 
   describe("Get all scraps", () => {
-    it("Should return any scraps on database when call this function", async () => {
+    it("Should return any scraps on database when user has scraps", async () => {
       const params = await makeParams();
       const sut = new ScrapRepository();
       await sut.create(params);
@@ -64,6 +64,17 @@ describe("Scrap repository", () => {
       expect(result[0].title).toEqual(params.title);
       expect(result[0].description).toEqual(params.description);
       expect(result[0].userUid).toEqual(params.userUid);
+    });
+
+    it("Should pass an userUid as a parameter when call this function", async () => {
+      const sut = new ScrapRepository();
+      jest.spyOn(sut, "getAll").mockResolvedValue([await makeScrap()]);
+      const spy = jest.spyOn(sut, "getAll");
+
+      await sut.getAll("any_user_uid");
+
+      expect(spy).toHaveBeenCalledWith("any_user_uid");
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 });
