@@ -39,7 +39,7 @@ describe("Scrap repository", () => {
     await UserEntity.delete({});
   });
 
-  describe("Create scrap", () => {
+  describe("Create", () => {
     it("Should create a scrap when pass valid params", async () => {
       const params = await makeParams();
       const sut = new ScrapRepository();
@@ -52,7 +52,7 @@ describe("Scrap repository", () => {
     });
   });
 
-  describe("Get all scraps", () => {
+  describe("Get all", () => {
     it("Should return any scraps on database when user has scraps", async () => {
       const params = await makeParams();
       const sut = new ScrapRepository();
@@ -84,6 +84,19 @@ describe("Scrap repository", () => {
 
       expect(result).toBeTruthy();
       expect(result.length).toEqual(0);
+    });
+  });
+
+  describe("Get one", () => {
+    it("Should return null if database doesn't find any scraps that match the params", async () => {
+      const sut = new ScrapRepository();
+      const user = await makeUser();
+      const scrap = await makeScrap();
+      const result1 = await sut.getOne(scrap.uid, user.uid);
+      const result2 = await sut.getOne(user.uid, user.uid);
+
+      expect(result1).toBeNull();
+      expect(result2).toBeNull();
     });
   });
 });
