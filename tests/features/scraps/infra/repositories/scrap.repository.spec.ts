@@ -168,5 +168,22 @@ describe("Scrap repository", () => {
       expect(spy).toHaveBeenCalledWith("any_uid", params);
       expect(spy).toHaveBeenCalledTimes(1);
     });
+
+    it("Should update a scrap and return the scrap updated when pass valid params", async () => {
+      const sut = new ScrapRepository();
+      const scrap = await makeScrap();
+      const params = {
+        title: "new_title",
+        description: "new_description",
+        userUid: scrap.userUid,
+      };
+
+      const result = (await sut.update(scrap.uid, params as any)) as any;
+
+      expect(result).toBeTruthy();
+      expect(result.title).toEqual(params.title);
+      expect(result.description).toEqual(params.description);
+      expect(result.userUid).toEqual(params.userUid);
+    });
   });
 });
