@@ -1,14 +1,8 @@
 import { ScrapEntity } from "../../../../core/infra";
 import { Scrap } from "../../domain";
 
-type ScrapParams = {
-  title: string;
-  description: string;
-  userUid: string;
-};
-
 export class ScrapRepository {
-  async create(params: ScrapParams): Promise<Scrap> {
+  async create(params: Scrap): Promise<Scrap> {
     const { title, description, userUid } = params;
 
     const scrap = await ScrapEntity.create({

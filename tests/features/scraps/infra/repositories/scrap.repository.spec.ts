@@ -3,6 +3,7 @@ import { ScrapEntity, UserEntity } from "../../../../../src/core/infra";
 import Database from "../../../../../src/core/infra/data/connections/database";
 import { Scrap } from "../../../../../src/features/scraps/domain";
 import { ScrapRepository } from "../../../../../src/features/scraps/infra";
+import { v4 as makeRandomUid } from "uuid";
 
 const makeUser = async (): Promise<User> => {
   return UserEntity.create({
@@ -43,7 +44,7 @@ describe("Scrap repository", () => {
     it("Should create a scrap when pass valid params", async () => {
       const params = await makeParams();
       const sut = new ScrapRepository();
-      const result = await sut.create(params);
+      const result = await sut.create(params as any);
 
       expect(result).toBeTruthy();
       expect(result.title).toEqual(params.title);
@@ -56,7 +57,7 @@ describe("Scrap repository", () => {
     it("Should return any scraps on database when user has scraps", async () => {
       const params = await makeParams();
       const sut = new ScrapRepository();
-      await sut.create(params);
+      await sut.create(params as any);
       const result = await sut.getAll(params.userUid);
 
       expect(result).toBeTruthy();
@@ -90,10 +91,8 @@ describe("Scrap repository", () => {
   describe("Get one", () => {
     it("Should return null if database doesn't find any scraps that match the params", async () => {
       const sut = new ScrapRepository();
-      const user = await makeUser();
-      const scrap = await makeScrap();
-      const result1 = await sut.getOne(scrap.uid, user.uid);
-      const result2 = await sut.getOne(user.uid, user.uid);
+      const result1 = await sut.getOne(makeRandomUid(), makeRandomUid());
+      const result2 = await sut.getOne(makeRandomUid(), makeRandomUid());
 
       expect(result1).toBeNull();
       expect(result2).toBeNull();
@@ -124,7 +123,19 @@ describe("Scrap repository", () => {
     it("Should return null when user has no scraps", async () => {
       const sut = new ScrapRepository();
       const user = await makeUser();
-      const result = await sut.getOne(user.uid, user.uid);
+      const result = await sut.getOne(makeRandomUid(), user.uid);
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe("Update", () => {
+    it("Should return null when database doesn't have scrap that match params", async () => {
+      const sut = new ScrapRepository();
+      const result = await sut.update(
+        makeRandomUid(),
+        (await makeParams()) as any
+      );
 
       expect(result).toBeNull();
     });
