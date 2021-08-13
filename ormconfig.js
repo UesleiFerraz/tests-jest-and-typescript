@@ -2,10 +2,10 @@ require("dotenv").config();
 
 let config = {};
 
-if (process.env.NODE_ENV?.toLowerCase() === "production") {
+if (process.env.NODE_ENV?.toLowerCase() === "test") {
   config = {
-    type: "sqlite",
-    database: "./testdb.sql",
+    type: "postgres",
+    url: process.env.DOCKER_TEST_DB_URL,
     entities: [`src/core/infra/data/database/entities/**/*`],
     migrations: [`src/core/infra/data/database/migrations/**/*`],
   };
