@@ -98,5 +98,16 @@ describe("Scrap repository", () => {
       expect(result1).toBeNull();
       expect(result2).toBeNull();
     });
+
+    it("Should return a scrap when database finds a scrap that match the params", async () => {
+      const sut = new ScrapRepository();
+      const scrap = await makeScrap();
+      const result = (await sut.getOne(scrap.uid, scrap.userUid)) as any;
+
+      expect(result).toBeTruthy();
+      expect(result.title).toEqual(scrap.title);
+      expect(result.description).toEqual(scrap.description);
+      expect(result.userUid).toEqual(scrap.userUid);
+    });
   });
 });
