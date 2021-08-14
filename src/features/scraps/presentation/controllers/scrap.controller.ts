@@ -5,7 +5,6 @@ import {
   notFound,
   ok,
   serverError,
-  unauthorized,
 } from "../../../../core/presentation";
 import { ScrapRepository, CacheRepository } from "../../infra";
 
