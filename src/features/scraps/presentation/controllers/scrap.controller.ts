@@ -67,6 +67,10 @@ export class ScrapController implements MVCController {
 
       const scrap = await this.#repository.getOne(uid, userUid);
 
+      if (!scrap) {
+        return notFound();
+      }
+
       await this.#cache.setex(`scrap:${uid}:${userUid}`, scrap, ONE_MINUTE);
       return ok({ scrap });
     } catch (error) {

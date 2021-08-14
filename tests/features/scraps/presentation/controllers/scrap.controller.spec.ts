@@ -3,7 +3,11 @@ import { CacheRepository } from "../../../../../src/core/infra/repositories";
 import { Scrap } from "../../../../../src/features/scraps/domain";
 import { ScrapController } from "../../../../../src/features/scraps/presentation";
 
-import { ok, serverError } from "../../../../../src/core/presentation";
+import {
+  notFound,
+  ok,
+  serverError,
+} from "../../../../../src/core/presentation";
 
 jest.mock(
   "../../../../../src/features/scraps/infra/repositories/scrap.repository.ts"
@@ -220,6 +224,17 @@ describe("Scrap controller", () => {
 
         expect(spy).toHaveBeenCalledTimes(1);
         expect(spy).toHaveBeenCalledWith("any_uid", "any_user_uid");
+      });
+
+      it("Should return the scrap if has any scrap on repository", async () => {
+        jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
+        jest
+          .spyOn(ScrapRepository.prototype, "getOne")
+          .mockResolvedValue(makeResult() as any);
+        const sut = makeSut();
+        const result = await sut.show(makeRequestShow());
+
+        expect(result).toEqual(ok({ scrap: makeResult() }));
       });
     });
   });
