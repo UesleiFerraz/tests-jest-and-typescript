@@ -1,10 +1,9 @@
 import { ScrapRepository } from "../../../../../src/features/scraps/infra";
 import { CacheRepository } from "../../../../../src/core/infra/repositories";
 import { Scrap } from "../../../../../src/features/scraps/domain";
-import {
-  ScrapController,
-  serverError,
-} from "../../../../../src/features/scraps/presentation";
+import { ScrapController } from "../../../../../src/features/scraps/presentation";
+
+import { ok, serverError } from "../../../../../src/core/presentation";
 
 jest.mock(
   "../../../../../src/features/scraps/infra/repositories/scrap.repository.ts"
@@ -61,13 +60,23 @@ describe("Scrap controller", () => {
       expect(result).toEqual(serverError());
     });
 
-    it("Should call all scraps of the user on the cache when this method is called", async () => {
+    it("Should call cache of the user when this method is called", async () => {
       const sut = makeSut();
       const spy = jest.spyOn(CacheRepository.prototype, "get");
       await sut.index(makeRequestStore());
 
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith("scrap:all:any_user_uid");
+    });
+
+    it("Should return all scraps of the user if has any scraps on cache", async () => {
+      jest
+        .spyOn(CacheRepository.prototype, "get")
+        .mockResolvedValue([makeResult()]);
+      const sut = makeSut();
+      const result = await sut.index(makeRequestStore());
+
+      expect(result).toEqual(ok({ scraps: [makeResult()] }));
     });
   });
 });
