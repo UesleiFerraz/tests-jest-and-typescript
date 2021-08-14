@@ -245,6 +245,23 @@ describe("Scrap controller", () => {
 
         expect(result).toEqual(notFound());
       });
+
+      it("Should call setex of cache after the repository find any scrap", async () => {
+        jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
+        jest
+          .spyOn(ScrapRepository.prototype, "getOne")
+          .mockResolvedValue(makeResult() as any);
+        const setSpy = jest.spyOn(CacheRepository.prototype, "setex");
+        const sut = makeSut();
+        await sut.show(makeRequestShow());
+
+        expect(setSpy).toHaveBeenCalledTimes(1);
+        expect(setSpy).toHaveBeenCalledWith(
+          "scrap:any_uid:any_user_uid",
+          makeResult(),
+          60
+        );
+      });
     });
   });
 });
