@@ -236,6 +236,15 @@ describe("Scrap controller", () => {
 
         expect(result).toEqual(ok({ scrap: makeResult() }));
       });
+
+      it("Should return notFound if the repository doesn't has any scrap", async () => {
+        jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
+        jest.spyOn(ScrapRepository.prototype, "getOne").mockResolvedValue(null);
+        const sut = makeSut();
+        const result = await sut.show(makeRequestShow());
+
+        expect(result).toEqual(notFound());
+      });
     });
   });
 });
