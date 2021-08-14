@@ -146,6 +146,28 @@ describe("Scrap controller", () => {
 
         expect(result).toEqual(ok({ scrap: makeResult() }));
       });
+
+      it("Should call getAll of repository and setex of cache after create the scrap", async () => {
+        jest
+          .spyOn(ScrapRepository.prototype, "create")
+          .mockResolvedValue(makeResult() as any);
+        jest
+          .spyOn(ScrapRepository.prototype, "getAll")
+          .mockResolvedValue([makeResult()] as any);
+        const getSpy = jest.spyOn(ScrapRepository.prototype, "getAll");
+        const setSpy = jest.spyOn(CacheRepository.prototype, "setex");
+        const sut = makeSut();
+        await sut.store(makeRequestStore());
+
+        expect(getSpy).toHaveBeenCalledTimes(1);
+        expect(getSpy).toHaveBeenCalledWith("any_user_uid");
+        expect(setSpy).toHaveBeenCalledTimes(1);
+        expect(setSpy).toHaveBeenCalledWith(
+          "scrap:all:any_user_uid",
+          [makeResult()],
+          60
+        );
+      });
     });
   });
 });
