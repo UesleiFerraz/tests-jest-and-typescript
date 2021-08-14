@@ -40,7 +40,7 @@ const makeResult = (): Omit<Scrap, "user"> => ({
   uid: "any_uid",
   title: "any_title",
   description: "any_description",
-  userUid: "any_uid",
+  userUid: "any_user_uid",
 });
 
 describe("Scrap controller", () => {
@@ -127,6 +127,15 @@ describe("Scrap controller", () => {
         const result = await sut.store(makeRequestStore());
 
         expect(result).toEqual(serverError());
+      });
+
+      it("Should call repository with request.body", async () => {
+        const sut = makeSut();
+        const spy = jest.spyOn(ScrapRepository.prototype, "create");
+        await sut.store(makeRequestStore());
+
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith(makeRequestStore().body);
       });
     });
   });
