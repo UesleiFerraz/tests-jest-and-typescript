@@ -122,20 +122,29 @@ describe("Scrap controller", () => {
         jest
           .spyOn(CacheRepository.prototype, "setex")
           .mockRejectedValue(new Error());
-
         const sut = makeSut();
         const result = await sut.store(makeRequestStore());
 
         expect(result).toEqual(serverError());
       });
 
-      it("Should call repository with request.body", async () => {
+      it("Should call repository with request.body if the request is valid", async () => {
         const sut = makeSut();
         const spy = jest.spyOn(ScrapRepository.prototype, "create");
         await sut.store(makeRequestStore());
 
         expect(spy).toHaveBeenCalledTimes(1);
         expect(spy).toHaveBeenCalledWith(makeRequestStore().body);
+      });
+
+      it("Should create and return the scrap if the request is valid", async () => {
+        jest
+          .spyOn(ScrapRepository.prototype, "create")
+          .mockResolvedValue(makeResult() as any);
+        const sut = makeSut();
+        const result = (await sut.store(makeRequestStore())) as any;
+
+        expect(result).toEqual(ok({ scrap: makeResult() }));
       });
     });
   });
