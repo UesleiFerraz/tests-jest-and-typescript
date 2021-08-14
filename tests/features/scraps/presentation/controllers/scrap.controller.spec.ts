@@ -99,5 +99,22 @@ describe("Scrap controller", () => {
 
       expect(result).toEqual(ok({ scraps: [makeResult()] }));
     });
+
+    it("Should call setex of cache if it doesn't find scraps on cache", async () => {
+      jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
+      jest
+        .spyOn(ScrapRepository.prototype, "getAll")
+        .mockResolvedValue([makeResult()] as any);
+      const spy = jest.spyOn(CacheRepository.prototype, "setex");
+      const sut = makeSut();
+      await sut.index(makeRequestStore());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
+        "scrap:all:any_user_uid",
+        [makeResult()],
+        60
+      );
+    });
   });
 });
