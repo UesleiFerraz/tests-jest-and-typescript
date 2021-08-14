@@ -49,7 +49,7 @@ describe("Scrap controller", () => {
   });
 
   describe("Index", () => {
-    it("Should return code 500 when throw any excepetion", async () => {
+    it("Should return serverError when throw any excepetion", async () => {
       jest
         .spyOn(CacheRepository.prototype, "get")
         .mockRejectedValue(new Error());
@@ -115,6 +115,19 @@ describe("Scrap controller", () => {
         [makeResult()],
         60
       );
+    });
+
+    describe("Store", () => {
+      it("Should return serverError when throw any error", async () => {
+        jest
+          .spyOn(CacheRepository.prototype, "setex")
+          .mockRejectedValue(new Error());
+
+        const sut = makeSut();
+        const result = await sut.store(makeRequestStore());
+
+        expect(result).toEqual(serverError());
+      });
     });
   });
 });
