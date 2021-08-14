@@ -201,6 +201,16 @@ describe("Scrap controller", () => {
 
         expect(result).toEqual(ok({ scrap: makeResult() }));
       });
+
+      it("Should call repository with uid and userUid as params if the cache doesn't have any scrap", async () => {
+        jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
+        const spy = jest.spyOn(ScrapRepository.prototype, "getOne");
+        const sut = makeSut();
+        await sut.show(makeRequestShow());
+
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith("any_uid", "any_user_uid");
+      });
     });
   });
 });
