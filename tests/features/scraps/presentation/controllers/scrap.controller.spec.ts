@@ -88,5 +88,16 @@ describe("Scrap controller", () => {
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith("any_user_uid");
     });
+
+    it("Should return all scraps of the user if has any scraps on repository", async () => {
+      jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
+      jest
+        .spyOn(ScrapRepository.prototype, "getAll")
+        .mockResolvedValue([makeResult()] as any);
+      const sut = makeSut();
+      const result = await sut.index(makeRequestStore());
+
+      expect(result).toEqual(ok({ scraps: [makeResult()] }));
+    });
   });
 });
