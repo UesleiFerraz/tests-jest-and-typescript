@@ -193,5 +193,15 @@ describe("Scrap repository", () => {
 
       expect(result).toBeNull();
     });
+
+    it("Should pass a scrapUid and an userUid as params on function call", async () => {
+      const sut = new ScrapRepository();
+      jest.spyOn(sut, "delete").mockResolvedValue(null);
+      const spy = jest.spyOn(sut, "delete");
+      await sut.delete("any_uid", "any_user_uid");
+
+      expect(spy).toHaveBeenCalledWith("any_uid", "any_user_uid");
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
   });
 });
