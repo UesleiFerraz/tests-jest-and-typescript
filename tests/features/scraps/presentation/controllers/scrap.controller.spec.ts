@@ -182,6 +182,15 @@ describe("Scrap controller", () => {
 
         expect(result).toEqual(serverError());
       });
+
+      it("Should call cache of the user when this method is called", async () => {
+        const sut = makeSut();
+        const spy = jest.spyOn(CacheRepository.prototype, "get");
+        await sut.show(makeRequestShow());
+
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith("scrap:any_uid:any_user_uid");
+      });
     });
   });
 });
