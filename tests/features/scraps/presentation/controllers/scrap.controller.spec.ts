@@ -60,5 +60,14 @@ describe("Scrap controller", () => {
 
       expect(result).toEqual(serverError());
     });
+
+    it("Should call all scraps of the user on the cache when this method is called", async () => {
+      const sut = makeSut();
+      const spy = jest.spyOn(CacheRepository.prototype, "get");
+      await sut.index(makeRequestStore());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith("scrap:all:any_user_uid");
+    });
   });
 });
