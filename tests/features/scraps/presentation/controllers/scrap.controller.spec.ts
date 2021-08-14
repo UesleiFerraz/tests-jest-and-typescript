@@ -32,7 +32,9 @@ const makeRequestStore = () => {
 };
 
 const makeRequestShow = () => ({
-  body: {},
+  body: {
+    userUid: "any_user_uid",
+  },
   params: { uid: "any_uid" },
 });
 
@@ -167,6 +169,18 @@ describe("Scrap controller", () => {
           [makeResult()],
           60
         );
+      });
+    });
+
+    describe("Show", () => {
+      it("Should return serverError when throw any exception", async () => {
+        jest
+          .spyOn(CacheRepository.prototype, "get")
+          .mockRejectedValue(new Error());
+        const sut = makeSut();
+        const result = await sut.show(makeRequestStore());
+
+        expect(result).toEqual(serverError());
       });
     });
   });
