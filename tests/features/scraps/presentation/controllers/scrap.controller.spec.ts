@@ -263,5 +263,17 @@ describe("Scrap controller", () => {
         );
       });
     });
+
+    describe("Update", () => {
+      it("Should return server error if throw any error", async () => {
+        jest
+          .spyOn(ScrapRepository.prototype, "update")
+          .mockRejectedValue(new Error());
+        const sut = makeSut();
+        const result = await sut.update(makeRequestStore());
+
+        expect(result).toEqual(serverError());
+      });
+    });
   });
 });
