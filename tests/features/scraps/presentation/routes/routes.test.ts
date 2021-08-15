@@ -125,6 +125,24 @@ describe("Scrap routes", () => {
             expect(request.body.error).toEqual("Missing param: title");
           });
       });
+
+      it("Should return code 400 if there is no description", async () => {
+        const user = await makeUser();
+        jest
+          .spyOn(UserAuthMiddleware.prototype, "handle")
+          .mockReturnValue(ok({ userUid: user.uid }));
+
+        await supertest(server)
+          .post("/scraps")
+          .send({
+            title: "any_title",
+            userUid: user.uid,
+          })
+          .expect(400)
+          .expect(request => {
+            expect(request.body.error).toEqual("Missing param: description");
+          });
+      });
     });
   });
 });
