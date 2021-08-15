@@ -20,8 +20,6 @@ const makeUser = async (): Promise<UserEntity> => {
   }).save();
 };
 
-const makeToken = () => {};
-
 const makeScrap = async (): Promise<Scrap> => {
   const user = await makeUser();
   return ScrapEntity.create({
@@ -62,7 +60,7 @@ describe("Scrap routes", () => {
       jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue([scrap]);
       jest
         .spyOn(UserAuthMiddleware.prototype, "handle")
-        .mockResolvedValue(ok({ userUid: scrap.userUid }) as never);
+        .mockReturnValue(ok({ userUid: scrap.userUid }));
 
       await supertest(server)
         .get("/scraps")
@@ -76,12 +74,10 @@ describe("Scrap routes", () => {
     it("Should return an empty array of scraps if user has no scrap", async () => {
       const user = await makeUser();
       jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
-      jest.spyOn(ScrapRepository.prototype, "getAll").mockResolvedValue([]);
       jest.spyOn(CacheRepository.prototype, "setex").mockResolvedValue(null);
-
       jest
         .spyOn(UserAuthMiddleware.prototype, "handle")
-        .mockResolvedValue(ok({ userUid: user.uid }) as never);
+        .mockReturnValue(ok({ userUid: user.uid }));
 
       await supertest(server)
         .get("/scraps")
@@ -89,6 +85,28 @@ describe("Scrap routes", () => {
         .expect(request => {
           expect(request.body.scraps.length).toEqual(0);
         });
+    });
+
+    describe("/Post scraps", () => {
+      it("Should return code 200 when save a valid scrap", async () => {
+        const user = await makeUser();
+        jest
+          .spyOn(UserAuthMiddleware.prototype, "handle")
+          .mockReturnValue(ok({ userUid: user.uid }));
+
+        await supertest(server)
+          .post("/scraps")
+          .send({
+            title: "any_title",
+            description: "any_description",
+            userUid: user.uid,
+          })
+          .expect(200)
+          .expect(request => {
+            expect(request.body.scrap.uid).toBeTruthy(),
+              expect(request.body.scrap.userUid).toEqual(user.uid);
+          });
+      });
     });
   });
 });
