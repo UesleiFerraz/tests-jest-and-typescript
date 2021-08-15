@@ -366,6 +366,25 @@ describe("Scrap controller", () => {
         expect(spy).toHaveBeenCalledWith("any_uid", "any_user_uid");
       });
 
+      it("Should delete the scrap if pass valid data", async () => {
+        const sut = makeSut();
+        const scrap = await sut.store(makeRequest());
+        await sut.delete({
+          params: {
+            uid: scrap.body.uid,
+          },
+          body: { userUid: scrap.body.userUid },
+        });
+        const result = await sut.show({
+          params: {
+            uid: scrap.body.uid,
+          },
+          body: { userUid: scrap.body.userUid },
+        });
+
+        expect(result).toEqual(notFound());
+      });
+
       it("Should return ok without body if the repository delete the scrap", async () => {
         jest
           .spyOn(ScrapRepository.prototype, "delete")
