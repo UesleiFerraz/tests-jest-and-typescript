@@ -284,6 +284,22 @@ describe("Scrap controller", () => {
         expect(spy).toHaveBeenCalledTimes(1);
         expect(spy).toHaveBeenCalledWith("any_uid", makeRequest().body);
       });
+
+      it("Should return ok and the updated scrap if the repository update the scrap", async () => {
+        const request = makeRequest();
+        request.body = {
+          ...request.body,
+          title: "new_title",
+          description: "new_description",
+        };
+        jest
+          .spyOn(ScrapRepository.prototype, "update")
+          .mockResolvedValue(request as any);
+        const sut = makeSut();
+        const result = await sut.update(request);
+
+        expect(result).toEqual(ok({ scrap: request }));
+      });
     });
   });
 });
