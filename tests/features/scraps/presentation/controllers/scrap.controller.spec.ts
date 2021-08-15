@@ -300,6 +300,18 @@ describe("Scrap controller", () => {
 
         expect(result).toEqual(ok({ scrap: request }));
       });
+
+      it("Should call the getAll method with userUid of the repository after update the scrap", async () => {
+        jest
+          .spyOn(ScrapRepository.prototype, "update")
+          .mockResolvedValue(makeRequest() as any);
+        const spy = jest.spyOn(ScrapRepository.prototype, "getAll");
+        const sut = makeSut();
+        await sut.update(makeRequest());
+
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith("any_user_uid");
+      });
     });
   });
 });
