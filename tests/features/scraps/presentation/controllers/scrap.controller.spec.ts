@@ -348,6 +348,14 @@ describe("Scrap controller", () => {
 
         expect(result).toEqual(serverError());
       });
+
+      it("Should return notFound if doesn't find any scrap that match the params", async () => {
+        jest.spyOn(ScrapRepository.prototype, "delete").mockResolvedValue(null);
+        const sut = makeSut();
+        const result = await sut.delete(makeRequest());
+
+        expect(result).toEqual(notFound());
+      });
     });
   });
 });
