@@ -337,5 +337,17 @@ describe("Scrap controller", () => {
         );
       });
     });
+
+    describe("Delete", () => {
+      it("Should return serverError if throw any error", async () => {
+        jest
+          .spyOn(ScrapRepository.prototype, "delete")
+          .mockRejectedValue(new Error());
+        const sut = makeSut();
+        const result = await sut.delete(makeRequest());
+
+        expect(result).toEqual(serverError());
+      });
+    });
   });
 });
