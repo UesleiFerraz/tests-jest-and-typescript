@@ -275,6 +275,15 @@ describe("Scrap controller", () => {
 
         expect(result).toEqual(notFound());
       });
+
+      it("Should call update of the repository with scrapUid and request.body when call this method", async () => {
+        const sut = makeSut();
+        const spy = jest.spyOn(ScrapRepository.prototype, "update");
+        await sut.update(makeRequest());
+
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith("any_uid", makeRequest().body);
+      });
     });
   });
 });
