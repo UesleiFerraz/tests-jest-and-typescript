@@ -265,7 +265,7 @@ describe("Scrap controller", () => {
     });
 
     describe("Update", () => {
-      it("Should return server error if throw any error", async () => {
+      it("Should return serverError if throw any error", async () => {
         jest
           .spyOn(ScrapRepository.prototype, "update")
           .mockRejectedValue(new Error());
@@ -273,6 +273,14 @@ describe("Scrap controller", () => {
         const result = await sut.update(makeRequestStore());
 
         expect(result).toEqual(serverError());
+      });
+
+      it("Should return notFound if doesn't find any scrap that match the params", async () => {
+        jest.spyOn(ScrapRepository.prototype, "update").mockResolvedValue(null);
+        const sut = makeSut();
+        const result = await sut.update(makeRequestStore());
+
+        expect(result).toEqual(notFound());
       });
     });
   });
