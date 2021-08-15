@@ -24,9 +24,9 @@ const makeSut = (): ScrapController => {
   );
 };
 
-const makeRequestStore = () => {
+const makeRequest = () => {
   return {
-    params: {},
+    params: { uid: "any_uid" },
     body: {
       title: "any_title",
       description: "any_description",
@@ -34,13 +34,6 @@ const makeRequestStore = () => {
     },
   };
 };
-
-const makeRequestShow = () => ({
-  body: {
-    userUid: "any_user_uid",
-  },
-  params: { uid: "any_uid" },
-});
 
 const makeResult = (): Omit<Scrap, "user"> => ({
   uid: "any_uid",
@@ -61,7 +54,7 @@ describe("Scrap controller", () => {
         .mockRejectedValue(new Error());
 
       const sut = makeSut();
-      const result = await sut.index(makeRequestStore());
+      const result = await sut.index(makeRequest());
 
       expect(result).toEqual(serverError());
     });
@@ -69,7 +62,7 @@ describe("Scrap controller", () => {
     it("Should call cache of the user when this method is called", async () => {
       const sut = makeSut();
       const spy = jest.spyOn(CacheRepository.prototype, "get");
-      await sut.index(makeRequestStore());
+      await sut.index(makeRequest());
 
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith("scrap:all:any_user_uid");
@@ -80,7 +73,7 @@ describe("Scrap controller", () => {
         .spyOn(CacheRepository.prototype, "get")
         .mockResolvedValue([makeResult()]);
       const sut = makeSut();
-      const result = await sut.index(makeRequestStore());
+      const result = await sut.index(makeRequest());
 
       expect(result).toEqual(ok({ scraps: [makeResult()] }));
     });
@@ -89,7 +82,7 @@ describe("Scrap controller", () => {
       jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
       const spy = jest.spyOn(ScrapRepository.prototype, "getAll");
       const sut = makeSut();
-      await sut.index(makeRequestStore());
+      await sut.index(makeRequest());
 
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith("any_user_uid");
@@ -101,7 +94,7 @@ describe("Scrap controller", () => {
         .spyOn(ScrapRepository.prototype, "getAll")
         .mockResolvedValue([makeResult()] as any);
       const sut = makeSut();
-      const result = await sut.index(makeRequestStore());
+      const result = await sut.index(makeRequest());
 
       expect(result).toEqual(ok({ scraps: [makeResult()] }));
     });
@@ -113,7 +106,7 @@ describe("Scrap controller", () => {
         .mockResolvedValue([makeResult()] as any);
       const spy = jest.spyOn(CacheRepository.prototype, "setex");
       const sut = makeSut();
-      await sut.index(makeRequestStore());
+      await sut.index(makeRequest());
 
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(
@@ -129,7 +122,7 @@ describe("Scrap controller", () => {
           .spyOn(CacheRepository.prototype, "setex")
           .mockRejectedValue(new Error());
         const sut = makeSut();
-        const result = await sut.store(makeRequestStore());
+        const result = await sut.store(makeRequest());
 
         expect(result).toEqual(serverError());
       });
@@ -137,10 +130,10 @@ describe("Scrap controller", () => {
       it("Should call repository with request.body if the request is valid", async () => {
         const sut = makeSut();
         const spy = jest.spyOn(ScrapRepository.prototype, "create");
-        await sut.store(makeRequestStore());
+        await sut.store(makeRequest());
 
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(makeRequestStore().body);
+        expect(spy).toHaveBeenCalledWith(makeRequest().body);
       });
 
       it("Should create and return the scrap if the request is valid", async () => {
@@ -148,7 +141,7 @@ describe("Scrap controller", () => {
           .spyOn(ScrapRepository.prototype, "create")
           .mockResolvedValue(makeResult() as any);
         const sut = makeSut();
-        const result = (await sut.store(makeRequestStore())) as any;
+        const result = (await sut.store(makeRequest())) as any;
 
         expect(result).toEqual(ok({ scrap: makeResult() }));
       });
@@ -163,7 +156,7 @@ describe("Scrap controller", () => {
         const getSpy = jest.spyOn(ScrapRepository.prototype, "getAll");
         const setSpy = jest.spyOn(CacheRepository.prototype, "setex");
         const sut = makeSut();
-        await sut.store(makeRequestStore());
+        await sut.store(makeRequest());
 
         expect(getSpy).toHaveBeenCalledTimes(1);
         expect(getSpy).toHaveBeenCalledWith("any_user_uid");
@@ -182,7 +175,7 @@ describe("Scrap controller", () => {
           .spyOn(CacheRepository.prototype, "get")
           .mockRejectedValue(new Error());
         const sut = makeSut();
-        const result = await sut.show(makeRequestStore());
+        const result = await sut.show(makeRequest());
 
         expect(result).toEqual(serverError());
       });
@@ -190,7 +183,7 @@ describe("Scrap controller", () => {
       it("Should call cache of the user when this method is called", async () => {
         const sut = makeSut();
         const spy = jest.spyOn(CacheRepository.prototype, "get");
-        await sut.show(makeRequestShow());
+        await sut.show(makeRequest());
 
         expect(spy).toHaveBeenCalledTimes(1);
         expect(spy).toHaveBeenCalledWith("scrap:any_uid:any_user_uid");
@@ -201,7 +194,7 @@ describe("Scrap controller", () => {
           .spyOn(CacheRepository.prototype, "get")
           .mockResolvedValue(makeResult() as any);
         const sut = makeSut();
-        const result = await sut.show(makeRequestStore());
+        const result = await sut.show(makeRequest());
 
         expect(result).toEqual(ok({ scrap: makeResult() }));
       });
@@ -210,7 +203,7 @@ describe("Scrap controller", () => {
         jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
         const spy = jest.spyOn(ScrapRepository.prototype, "getOne");
         const sut = makeSut();
-        await sut.show(makeRequestShow());
+        await sut.show(makeRequest());
 
         expect(spy).toHaveBeenCalledTimes(1);
         expect(spy).toHaveBeenCalledWith("any_uid", "any_user_uid");
@@ -220,7 +213,7 @@ describe("Scrap controller", () => {
         jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
         const spy = jest.spyOn(ScrapRepository.prototype, "getOne");
         const sut = makeSut();
-        await sut.show(makeRequestShow());
+        await sut.show(makeRequest());
 
         expect(spy).toHaveBeenCalledTimes(1);
         expect(spy).toHaveBeenCalledWith("any_uid", "any_user_uid");
@@ -232,7 +225,7 @@ describe("Scrap controller", () => {
           .spyOn(ScrapRepository.prototype, "getOne")
           .mockResolvedValue(makeResult() as any);
         const sut = makeSut();
-        const result = await sut.show(makeRequestShow());
+        const result = await sut.show(makeRequest());
 
         expect(result).toEqual(ok({ scrap: makeResult() }));
       });
@@ -241,7 +234,7 @@ describe("Scrap controller", () => {
         jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
         jest.spyOn(ScrapRepository.prototype, "getOne").mockResolvedValue(null);
         const sut = makeSut();
-        const result = await sut.show(makeRequestShow());
+        const result = await sut.show(makeRequest());
 
         expect(result).toEqual(notFound());
       });
@@ -253,7 +246,7 @@ describe("Scrap controller", () => {
           .mockResolvedValue(makeResult() as any);
         const setSpy = jest.spyOn(CacheRepository.prototype, "setex");
         const sut = makeSut();
-        await sut.show(makeRequestShow());
+        await sut.show(makeRequest());
 
         expect(setSpy).toHaveBeenCalledTimes(1);
         expect(setSpy).toHaveBeenCalledWith(
@@ -270,7 +263,7 @@ describe("Scrap controller", () => {
           .spyOn(ScrapRepository.prototype, "update")
           .mockRejectedValue(new Error());
         const sut = makeSut();
-        const result = await sut.update(makeRequestStore());
+        const result = await sut.update(makeRequest());
 
         expect(result).toEqual(serverError());
       });
@@ -278,7 +271,7 @@ describe("Scrap controller", () => {
       it("Should return notFound if doesn't find any scrap that match the params", async () => {
         jest.spyOn(ScrapRepository.prototype, "update").mockResolvedValue(null);
         const sut = makeSut();
-        const result = await sut.update(makeRequestStore());
+        const result = await sut.update(makeRequest());
 
         expect(result).toEqual(notFound());
       });
