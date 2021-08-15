@@ -387,6 +387,28 @@ describe("Scrap controller", () => {
         expect(spy).toHaveBeenCalledTimes(1);
         expect(spy).toHaveBeenCalledWith("any_user_uid");
       });
+
+      it("Should call the del and the setex methods of the cache after delete the scrap", async () => {
+        jest
+          .spyOn(ScrapRepository.prototype, "delete")
+          .mockResolvedValue(makeRequest() as any);
+        jest
+          .spyOn(ScrapRepository.prototype, "getAll")
+          .mockResolvedValue([makeResult()] as any);
+        const delSpy = jest.spyOn(CacheRepository.prototype, "del");
+        const setSpy = jest.spyOn(CacheRepository.prototype, "setex");
+        const sut = makeSut();
+        await sut.delete(makeRequest());
+
+        expect(delSpy).toHaveBeenCalledTimes(1);
+        expect(delSpy).toHaveBeenCalledWith("scrap:any_uid:any_user_uid");
+        expect(setSpy).toHaveBeenCalledTimes(1);
+        expect(setSpy).toHaveBeenCalledWith(
+          "scrap:all:any_user_uid",
+          [makeResult()],
+          60
+        );
+      });
     });
   });
 });
