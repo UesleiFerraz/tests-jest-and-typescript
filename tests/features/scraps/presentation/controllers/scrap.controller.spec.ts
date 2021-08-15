@@ -375,6 +375,18 @@ describe("Scrap controller", () => {
 
         expect(result).toEqual(ok({}));
       });
+
+      it("Should call the getAll method with userUid of the repository after delete the scrap", async () => {
+        jest
+          .spyOn(ScrapRepository.prototype, "delete")
+          .mockResolvedValue(makeRequest() as any);
+        const spy = jest.spyOn(ScrapRepository.prototype, "getAll");
+        const sut = makeSut();
+        await sut.delete(makeRequest());
+
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith("any_user_uid");
+      });
     });
   });
 });
