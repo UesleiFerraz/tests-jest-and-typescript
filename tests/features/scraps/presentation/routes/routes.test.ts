@@ -72,5 +72,23 @@ describe("Scrap routes", () => {
             expect(request.body.scraps[0].uid).toEqual(scrap.uid);
         });
     });
+
+    it("Should return an empty array of scraps if user has no scrap", async () => {
+      const user = await makeUser();
+      jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue(null);
+      jest.spyOn(ScrapRepository.prototype, "getAll").mockResolvedValue([]);
+      jest.spyOn(CacheRepository.prototype, "setex").mockResolvedValue(null);
+
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockResolvedValue(ok({ userUid: user.uid }) as never);
+
+      await supertest(server)
+        .get("/scraps")
+        .expect(200)
+        .expect(request => {
+          expect(request.body.scraps.length).toEqual(0);
+        });
+    });
   });
 });
