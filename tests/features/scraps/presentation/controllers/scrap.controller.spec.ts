@@ -312,6 +312,30 @@ describe("Scrap controller", () => {
         expect(spy).toHaveBeenCalledTimes(1);
         expect(spy).toHaveBeenCalledWith("any_user_uid");
       });
+
+      it("Should call the setex method, 2 times, of the cache after update the scrap", async () => {
+        jest
+          .spyOn(ScrapRepository.prototype, "update")
+          .mockResolvedValue(makeRequest() as any);
+        jest
+          .spyOn(ScrapRepository.prototype, "getAll")
+          .mockResolvedValue([makeResult()] as any);
+        const setSpy = jest.spyOn(CacheRepository.prototype, "setex");
+        const sut = makeSut();
+        await sut.update(makeRequest());
+
+        expect(setSpy).toHaveBeenCalledTimes(2);
+        expect(setSpy).toHaveBeenCalledWith(
+          "scrap:any_uid:any_user_uid",
+          makeRequest(),
+          60
+        );
+        expect(setSpy).toHaveBeenCalledWith(
+          "scrap:all:any_user_uid",
+          [makeResult()],
+          60
+        );
+      });
     });
   });
 });
