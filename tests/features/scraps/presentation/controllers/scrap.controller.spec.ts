@@ -365,6 +365,16 @@ describe("Scrap controller", () => {
         expect(spy).toHaveBeenCalledTimes(1);
         expect(spy).toHaveBeenCalledWith("any_uid", "any_user_uid");
       });
+
+      it("Should return ok without body if the repository delete the scrap", async () => {
+        jest
+          .spyOn(ScrapRepository.prototype, "delete")
+          .mockResolvedValue("any_scrap" as any);
+        const sut = makeSut();
+        const result = await sut.delete(makeRequest());
+
+        expect(result).toEqual(ok({}));
+      });
     });
   });
 });
