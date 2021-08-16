@@ -220,4 +220,19 @@ describe("Scrap routes", () => {
         expect(request.body.error).toEqual("Data not found");
       });
   });
+
+  describe("/Delete scrap", () => {
+    it("Should return code 401 if there is no token", async () => {
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(unauthorized());
+
+      await supertest(server)
+        .put("/scraps/any_uid")
+        .expect(401)
+        .expect(request => {
+          expect(request.body.error).toEqual("you must authenticate first");
+        });
+    });
+  });
 });
