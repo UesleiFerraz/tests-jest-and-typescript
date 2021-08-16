@@ -55,6 +55,18 @@ describe("Scrap routes", () => {
   });
 
   describe("/Get scraps", () => {
+    it("Should return code 401 if user doesn't have token'", async () => {
+      const scrap = await makeScrap();
+      jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue([scrap]);
+
+      await supertest(server)
+        .get("/scraps")
+        .expect(401)
+        .expect(request => {
+          expect(request.body.error).toEqual("you must authenticate first");
+        });
+    });
+
     it("Should return all scraps if has any scrap", async () => {
       const scrap = await makeScrap();
       jest.spyOn(CacheRepository.prototype, "get").mockResolvedValue([scrap]);
