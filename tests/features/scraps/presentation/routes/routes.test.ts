@@ -253,5 +253,20 @@ describe("Scrap routes", () => {
           expect(request.body).toEqual({});
         });
     });
+
+    it("Should return 404 if doesn't exist a scrap that match the params", async () => {
+      const user = await makeUser();
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(ok({ userUid: user.uid }));
+      jest.spyOn(ScrapRepository.prototype, "update").mockResolvedValue(null);
+
+      await supertest(server)
+        .delete(`/scraps/${user.uid}`)
+        .expect(404)
+        .expect(request => {
+          expect(request.body.error).toEqual("Data not found");
+        });
+    });
   });
 });
