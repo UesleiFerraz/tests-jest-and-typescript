@@ -169,4 +169,19 @@ describe("Scrap routes", () => {
         });
     });
   });
+
+  describe("/Put scraps", () => {
+    it("Should return code 401 if there is no token", async () => {
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(unauthorized());
+
+      await supertest(server)
+        .post("/scraps")
+        .expect(401)
+        .expect(request => {
+          expect(request.body.error).toEqual("you must authenticate first");
+        });
+    });
+  });
 });
