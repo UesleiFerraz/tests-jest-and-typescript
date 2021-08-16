@@ -234,5 +234,24 @@ describe("Scrap routes", () => {
           expect(request.body.error).toEqual("you must authenticate first");
         });
     });
+
+    it("Should return code 200 and an empty body if delete the scrap successfully", async () => {
+      const scrap = await makeScrap();
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(ok({ userUid: scrap.userUid }));
+      jest
+        .spyOn(ScrapRepository.prototype, "getAll")
+        .mockResolvedValue([scrap]);
+      jest.spyOn(CacheRepository.prototype, "setex").mockResolvedValue(null);
+      jest.spyOn(CacheRepository.prototype, "del").mockResolvedValue(false);
+
+      await supertest(server)
+        .delete(`/scraps/${scrap.uid}`)
+        .expect(200)
+        .expect(request => {
+          expect(request.body).toEqual({});
+        });
+    });
   });
 });
