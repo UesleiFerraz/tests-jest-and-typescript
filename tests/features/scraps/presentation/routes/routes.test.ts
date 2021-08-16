@@ -12,6 +12,7 @@ import { ScrapRepository } from "../../../../../src/features/scraps/infra";
 import App from "../../../../../src/core/presentation/app";
 import { ok, unauthorized } from "../../../../../src/core/presentation";
 import { UserAuthMiddleware } from "../../../../../src/features/scraps/presentation/middlewares/user-auth.middleware";
+import { title } from "process";
 
 const makeUser = async (): Promise<UserEntity> => {
   return UserEntity.create({
@@ -177,10 +178,26 @@ describe("Scrap routes", () => {
         .mockReturnValue(unauthorized());
 
       await supertest(server)
-        .post("/scraps")
+        .put("/scraps/any_uid")
         .expect(401)
         .expect(request => {
           expect(request.body.error).toEqual("you must authenticate first");
+        });
+    });
+
+    it("Should return code 404 if doesn't find any scrap", async () => {
+      const user = await makeUser();
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(ok({ userUid: user.uid }));
+      jest.spyOn(ScrapRepository.prototype, "update").mockResolvedValue(null);
+
+      await supertest(server)
+        .put("/scraps/any_uid")
+        .expect(404)
+        .send({ title: "any_title", description: "any_description" })
+        .expect(request => {
+          expect(request.body.error).toEqual("Data not found");
         });
     });
   });
