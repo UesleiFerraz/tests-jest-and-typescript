@@ -10,7 +10,7 @@ import ScrapRoutes from "../../../../../src/features/scraps/presentation/routes/
 import supertest from "supertest";
 import { ScrapRepository } from "../../../../../src/features/scraps/infra";
 import App from "../../../../../src/core/presentation/app";
-import { ok } from "../../../../../src/core/presentation";
+import { ok, unauthorized } from "../../../../../src/core/presentation";
 import { UserAuthMiddleware } from "../../../../../src/features/scraps/presentation/middlewares/user-auth.middleware";
 
 const makeUser = async (): Promise<UserEntity> => {
@@ -98,63 +98,75 @@ describe("Scrap routes", () => {
           expect(request.body.scraps.length).toEqual(0);
         });
     });
+  });
 
-    describe("/Post scraps", () => {
-      it("Should return code 200 when save a valid scrap", async () => {
-        const user = await makeUser();
-        jest
-          .spyOn(UserAuthMiddleware.prototype, "handle")
-          .mockReturnValue(ok({ userUid: user.uid }));
+  describe("/Post scraps", () => {
+    it("Should return code 200 when save a valid scrap", async () => {
+      const user = await makeUser();
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(ok({ userUid: user.uid }));
 
-        await supertest(server)
-          .post("/scraps")
-          .send({
-            title: "any_title",
-            description: "any_description",
-            userUid: user.uid,
-          })
-          .expect(200)
-          .expect(request => {
-            expect(request.body.scrap.uid).toBeTruthy(),
-              expect(request.body.scrap.userUid).toEqual(user.uid);
-          });
-      });
+      await supertest(server)
+        .post("/scraps")
+        .send({
+          title: "any_title",
+          description: "any_description",
+          userUid: user.uid,
+        })
+        .expect(200)
+        .expect(request => {
+          expect(request.body.scrap.uid).toBeTruthy(),
+            expect(request.body.scrap.userUid).toEqual(user.uid);
+        });
+    });
 
-      it("Should return code 400 if there is no title", async () => {
-        const user = await makeUser();
-        jest
-          .spyOn(UserAuthMiddleware.prototype, "handle")
-          .mockReturnValue(ok({ userUid: user.uid }));
+    it("Should return code 401 if there is no token", async () => {
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(unauthorized());
 
-        await supertest(server)
-          .post("/scraps")
-          .send({
-            description: "any_description",
-            userUid: user.uid,
-          })
-          .expect(400)
-          .expect(request => {
-            expect(request.body.error).toEqual("Missing param: title");
-          });
-      });
+      await supertest(server)
+        .post("/scraps")
+        .expect(401)
+        .expect(request => {
+          expect(request.body.error).toEqual("you must authenticate first");
+        });
+    });
+    it("Should return code 400 if there is no title", async () => {
+      const user = await makeUser();
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(ok({ userUid: user.uid }));
 
-      it("Should return code 400 if there is no description", async () => {
-        const user = await makeUser();
-        jest
-          .spyOn(UserAuthMiddleware.prototype, "handle")
-          .mockReturnValue(ok({ userUid: user.uid }));
+      await supertest(server)
+        .post("/scraps")
+        .send({
+          description: "any_description",
+          userUid: user.uid,
+        })
+        .expect(400)
+        .expect(request => {
+          expect(request.body.error).toEqual("Missing param: title");
+        });
+    });
 
-        await supertest(server)
-          .post("/scraps")
-          .send({
-            title: "any_title",
-            userUid: user.uid,
-          })
-          .expect(400)
-          .expect(request => {
-            expect(request.body.error).toEqual("Missing param: description");
-          });
-      });
+    it("Should return code 400 if there is no description", async () => {
+      const user = await makeUser();
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(ok({ userUid: user.uid }));
+
+      await supertest(server)
+        .post("/scraps")
+        .send({
+          title: "any_title",
+          userUid: user.uid,
+        })
+        .expect(400)
+        .expect(request => {
+          expect(request.body.error).toEqual("Missing param: description");
+        });
     });
   });
 });
