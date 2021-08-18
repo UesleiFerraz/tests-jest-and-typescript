@@ -118,4 +118,13 @@ describe("User controller", () => {
       expect(result).toThrowError();
     });
   });
+
+  describe("Index user", () => {
+    it("Should throw an error when this method is called", async () => {
+      const sut = makeSut();
+      const result = sut.index;
+
+      expect(result).toThrowError();
+    });
+  });
 });
