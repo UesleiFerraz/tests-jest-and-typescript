@@ -81,5 +81,15 @@ describe("User repository", () => {
       expect(result.uid).toBeTruthy();
       expect(result.username).toEqual(params.username);
     });
+
+    it("Should pass a username as parameter when call this method", async () => {
+      const sut = new UserRepository();
+      const spy = jest.spyOn(sut, "getOne");
+      spy.mockResolvedValue(await makeUser());
+      await sut.getOne("any_username");
+
+      expect(spy).toHaveBeenCalledWith("any_username");
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
   });
 });
