@@ -13,6 +13,7 @@ const makeUser = async (): Promise<User> => {
 
 const makeParams = () => {
   return {
+    uid: "any_uid",
     username: "any_username",
     password: "any_password",
   };
@@ -90,6 +91,15 @@ describe("User repository", () => {
 
       expect(spy).toHaveBeenCalledWith("any_username");
       expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("Update", () => {
+    it("Should return null if there is no user that match the params", async () => {
+      const sut = new UserRepository();
+      const result = await sut.update({ uid: makeRandomUid() } as any);
+
+      expect(result).toBeNull();
     });
   });
 });
