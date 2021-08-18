@@ -149,5 +149,15 @@ describe("User repository", () => {
 
       expect(result).toBeFalsy();
     });
+
+    it("Should remove the user if valid uid is provided", async () => {
+      const params = makeParams();
+      const sut = new UserRepository();
+      const user = await sut.create(params as any);
+      await sut.delete(user.uid);
+      const result = (await sut.getOne(params.username)) as any;
+
+      expect(result).toBeNull();
+    });
   });
 });
