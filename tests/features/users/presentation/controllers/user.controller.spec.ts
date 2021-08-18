@@ -72,4 +72,16 @@ describe("User controller", () => {
       expect(result).toEqual(ok(makeResult()));
     });
   });
+
+  describe("Show user", () => {
+    it("Should return serverError if throw any error", async () => {
+      jest
+        .spyOn(UserRepository.prototype, "getOne")
+        .mockRejectedValue(new Error());
+      const sut = makeSut();
+      const result = await sut.store(makeRequest());
+
+      expect(result).toEqual(serverError());
+    });
+  });
 });
