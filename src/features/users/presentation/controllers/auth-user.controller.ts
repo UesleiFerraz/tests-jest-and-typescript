@@ -28,9 +28,10 @@ export class AuthUserController implements Controller {
         return notFound();
       }
 
-      const secret = process.env.SECRET || "";
+      const secret = process.env.SECRET || "123";
       let token: string | undefined;
       if (user.password) {
+        console.log(user.password, password);
         const isValidPassword = await bcrypt.compare(password, user.password);
 
         if (!isValidPassword) {

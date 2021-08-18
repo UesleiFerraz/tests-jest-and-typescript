@@ -165,6 +165,23 @@ describe("User routes", () => {
             expect(request.body.error).toEqual("password invalid");
           });
       });
+      it("Should return 200 and a token if data is valid", async () => {
+        await UserEntity.create({
+          username: "any",
+          password: "any",
+        }).save();
+
+        await supertest(server)
+          .post("/auth")
+          .send({
+            username: "any",
+            password: "any",
+          })
+          .expect(200)
+          .expect(request => {
+            expect(request.body.token).toBeTruthy();
+          });
+      });
     });
   });
 });
