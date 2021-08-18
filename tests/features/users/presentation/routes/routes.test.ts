@@ -104,6 +104,10 @@ describe("User routes", () => {
             expect(request.body.error).toEqual("Username already exists");
           });
       });
+
+      it("Should return code 200 if username does not exist", async () => {
+        await supertest(server).get("/users/any").expect(200);
+      });
     });
   });
 });
