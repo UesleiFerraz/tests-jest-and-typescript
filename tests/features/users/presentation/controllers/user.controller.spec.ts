@@ -83,5 +83,15 @@ describe("User controller", () => {
 
       expect(result).toEqual(serverError());
     });
+
+    it("Should return conflict if the user exists", async () => {
+      jest
+        .spyOn(UserRepository.prototype, "getOne")
+        .mockResolvedValue(makeResult() as any);
+      const sut = makeSut();
+      const result = await sut.show(makeRequest());
+
+      expect(result).toEqual(conflict("Username"));
+    });
   });
 });
