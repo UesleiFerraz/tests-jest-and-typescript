@@ -93,5 +93,13 @@ describe("User controller", () => {
 
       expect(result).toEqual(conflict("Username"));
     });
+
+    it("Should return ok if the user does not exists", async () => {
+      jest.spyOn(UserRepository.prototype, "getOne").mockResolvedValue(null);
+      const sut = makeSut();
+      const result = await sut.show(makeRequest());
+
+      expect(result).toEqual(ok({}));
+    });
   });
 });
