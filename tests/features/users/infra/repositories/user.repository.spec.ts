@@ -130,5 +130,15 @@ describe("User repository", () => {
       expect(result.uid).toBeTruthy();
       expect(result.username).toEqual(updatedParams.username);
     });
+
+    it("Should pass an user as params if call this method", async () => {
+      const sut = new UserRepository();
+      const spy = jest.spyOn(sut, "update");
+      spy.mockResolvedValue(await makeUser());
+      await sut.update(makeParams() as any);
+
+      expect(spy).toHaveBeenCalledWith(makeParams() as any);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
   });
 });
