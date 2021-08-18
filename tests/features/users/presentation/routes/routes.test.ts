@@ -134,6 +134,19 @@ describe("User routes", () => {
             expect(request.body.error).toEqual("Missing param: password");
           });
       });
+
+      it("Should return 404 if user does not exist", async () => {
+        await supertest(server)
+          .post("/auth")
+          .send({
+            username: "any",
+            password: "any",
+          })
+          .expect(404)
+          .expect(request => {
+            expect(request.body.error).toEqual("Data not found");
+          });
+      });
     });
   });
 });
