@@ -40,4 +40,18 @@ describe("User repository", () => {
       expect(result.username).toEqual(params.username);
     });
   });
+
+  describe("Get All", () => {
+    it("Should return all users when call this method", async () => {
+      const params = await makeParams();
+      const sut = new UserRepository();
+      await sut.create(params as any);
+      const result = await sut.getAll();
+
+      expect(result).toBeTruthy();
+      expect(result.length).toBeGreaterThanOrEqual(1);
+      expect(result[0].uid).toBeTruthy();
+      expect(result[0].username).toEqual(params.username);
+    });
+  });
 });
