@@ -62,4 +62,13 @@ describe("User repository", () => {
       expect(result.length).toEqual(0);
     });
   });
+
+  describe("Get one", () => {
+    it("Should return null if there is no user that match the username", async () => {
+      const sut = new UserRepository();
+      const result = await sut.getOne("any_username");
+
+      expect(result).toBeNull();
+    });
+  });
 });
