@@ -53,5 +53,13 @@ describe("User repository", () => {
       expect(result[0].uid).toBeTruthy();
       expect(result[0].username).toEqual(params.username);
     });
+
+    it("Should return an empty array if there is no user in database", async () => {
+      const sut = new UserRepository();
+      const result = await sut.getAll();
+
+      expect(result).toBeTruthy();
+      expect(result.length).toEqual(0);
+    });
   });
 });
