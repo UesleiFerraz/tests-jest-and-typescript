@@ -259,7 +259,7 @@ describe("Scrap routes", () => {
       jest
         .spyOn(UserAuthMiddleware.prototype, "handle")
         .mockReturnValue(ok({ userUid: user.uid }));
-      jest.spyOn(ScrapRepository.prototype, "update").mockResolvedValue(null);
+      jest.spyOn(ScrapRepository.prototype, "delete").mockResolvedValue(null);
 
       await supertest(server)
         .delete(`/scraps/${user.uid}`)
