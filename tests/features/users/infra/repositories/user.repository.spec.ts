@@ -113,5 +113,22 @@ describe("User repository", () => {
       expect(result.uid).toBeTruthy();
       expect(result.username).toEqual(params.username);
     });
+
+    it("Should update and return the updated user if valid data is provided", async () => {
+      const params = makeParams();
+      const sut = new UserRepository();
+      const user = await sut.create(params as any);
+
+      const updatedParams = {
+        uid: user.uid,
+        username: "new_username",
+        password: "new_password",
+      };
+      const result = (await sut.update(updatedParams as any)) as any;
+
+      expect(result).toBeTruthy();
+      expect(result.uid).toBeTruthy();
+      expect(result.username).toEqual(updatedParams.username);
+    });
   });
 });
