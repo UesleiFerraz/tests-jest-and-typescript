@@ -100,4 +100,13 @@ describe("User controller", () => {
       expect(result).toEqual(ok({}));
     });
   });
+
+  describe("Update user", () => {
+    it("Should throw an error when this method is called", async () => {
+      const sut = makeSut();
+      const result = sut.update;
+
+      expect(result).toThrowError();
+    });
+  });
 });

@@ -1,13 +1,9 @@
 import express, { Router } from "express";
 import { ScrapEntity, UserEntity } from "../../../../../src/core/infra";
-import { User } from "../../../../../src/core/domain";
 import Database from "../../../../../src/core/infra/data/connections/database";
 import UserRoutes from "../../../../../src/features/users/presentation/routes/routes";
 import supertest from "supertest";
-import { UserRepository } from "../../../../../src/features/users/infra";
 import App from "../../../../../src/core/presentation/app";
-import { ok, unauthorized } from "../../../../../src/core/presentation";
-import { UserAuthMiddleware } from "../../../../../src/features/scraps/presentation/middlewares/user-auth.middleware";
 
 describe("User routes", () => {
   const server = new App().server;
