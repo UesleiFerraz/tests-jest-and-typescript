@@ -101,5 +101,17 @@ describe("User repository", () => {
 
       expect(result).toBeNull();
     });
+
+    it("Should return the user that match the params", async () => {
+      const params = makeParams();
+      const sut = new UserRepository();
+      const user = await sut.create(params as any);
+      params.uid = user.uid;
+      const result = (await sut.update(params as any)) as any;
+
+      expect(result).toBeTruthy();
+      expect(result.uid).toBeTruthy();
+      expect(result.username).toEqual(params.username);
+    });
   });
 });
