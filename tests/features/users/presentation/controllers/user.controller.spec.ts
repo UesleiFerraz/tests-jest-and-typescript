@@ -1,9 +1,7 @@
 import { UserRepository } from "../../../../../src/features/users/infra";
 import { User } from "../../../../../src/core/domain";
 import { UserController } from "../../../../../src/features/users/presentation";
-
 import {
-  notFound,
   ok,
   serverError,
   conflict,
