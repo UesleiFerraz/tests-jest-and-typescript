@@ -47,5 +47,17 @@ describe("User routes", () => {
           expect(request.body.uid).toBeTruthy();
         });
     });
+
+    it("Should return code 400 if there is no username", async () => {
+      await supertest(server)
+        .post("/users")
+        .send({
+          password: "any",
+        })
+        .expect(400)
+        .expect(request => {
+          expect(request.body.error).toEqual("Missing param: username");
+        });
+    });
   });
 });
