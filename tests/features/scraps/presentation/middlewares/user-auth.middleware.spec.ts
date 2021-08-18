@@ -21,4 +21,12 @@ describe("AuthMiddleware", () => {
 
     expect(result).toEqual(unauthorized());
   });
+
+  it("Should return unauthorized if token is invalid", async () => {
+    jest.spyOn(jwt, "verify").mockReturnValue(false as any);
+    const sut = makeSut();
+    const result = sut.handle("" as any);
+
+    expect(result).toEqual(unauthorized());
+  });
 });
