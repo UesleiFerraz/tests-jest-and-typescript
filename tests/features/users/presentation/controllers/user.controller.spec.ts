@@ -77,7 +77,7 @@ describe("User controller", () => {
         .spyOn(UserRepository.prototype, "getOne")
         .mockRejectedValue(new Error());
       const sut = makeSut();
-      const result = await sut.store(makeRequest());
+      const result = await sut.show(makeRequest());
 
       expect(result).toEqual(serverError());
     });
