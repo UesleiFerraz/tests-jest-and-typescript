@@ -141,4 +141,13 @@ describe("User repository", () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe("Delete", () => {
+    it("Should return null if there is no user that match the params", async () => {
+      const sut = new UserRepository();
+      const result = await sut.delete(makeRandomUid());
+
+      expect(result).toBeFalsy();
+    });
+  });
 });
