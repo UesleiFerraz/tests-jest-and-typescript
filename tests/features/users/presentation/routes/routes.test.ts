@@ -147,6 +147,24 @@ describe("User routes", () => {
             expect(request.body.error).toEqual("Data not found");
           });
       });
+
+      it("Should return 403 if password is wrong", async () => {
+        await UserEntity.create({
+          username: "any",
+          password: "any",
+        }).save();
+
+        await supertest(server)
+          .post("/auth")
+          .send({
+            username: "any",
+            password: "invalid_password",
+          })
+          .expect(403)
+          .expect(request => {
+            expect(request.body.error).toEqual("password invalid");
+          });
+      });
     });
   });
 });
