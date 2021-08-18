@@ -71,5 +71,23 @@ describe("User routes", () => {
           expect(request.body.error).toEqual("Missing param: password");
         });
     });
+
+    it("Should return code 409 if username already exists", async () => {
+      await UserEntity.create({
+        username: "any",
+        password: "any",
+      }).save();
+
+      await supertest(server)
+        .post("/users")
+        .send({
+          username: "any",
+          password: "any",
+        })
+        .expect(409)
+        .expect(request => {
+          expect(request.body.error).toEqual("Username already exists");
+        });
+    });
   });
 });
