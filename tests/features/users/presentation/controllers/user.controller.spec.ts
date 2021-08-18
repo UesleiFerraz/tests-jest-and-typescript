@@ -60,5 +60,16 @@ describe("User controller", () => {
 
       expect(result).toEqual(serverError());
     });
+
+    it("Should return ok if success", async () => {
+      jest.spyOn(UserRepository.prototype, "getOne").mockResolvedValue(null);
+      jest
+        .spyOn(UserRepository.prototype, "create")
+        .mockResolvedValue(makeResult());
+      const sut = makeSut();
+      const result = await sut.store(makeRequest());
+
+      expect(result).toEqual(ok(makeResult()));
+    });
   });
 });
