@@ -42,13 +42,23 @@ describe("User controller", () => {
 
   describe("Store user", () => {
     it("Should return conflit if username already exists", async () => {
-      const sut = makeSut();
       jest
         .spyOn(UserRepository.prototype, "getOne")
         .mockResolvedValue(makeResult() as any);
+      const sut = makeSut();
       const result = await sut.store(makeRequest());
 
       expect(result).toEqual(conflict("Username"));
+    });
+
+    it("Should return serverError if throw any error", async () => {
+      jest
+        .spyOn(UserRepository.prototype, "getOne")
+        .mockRejectedValue(new Error());
+      const sut = makeSut();
+      const result = await sut.store(makeRequest());
+
+      expect(result).toEqual(serverError());
     });
   });
 });
