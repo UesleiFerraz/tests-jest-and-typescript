@@ -109,5 +109,19 @@ describe("User routes", () => {
         await supertest(server).get("/users/any").expect(200);
       });
     });
+
+    describe("Post /auth", () => {
+      it("Should return code 400 if there is no username", async () => {
+        await supertest(server)
+          .post("/auth")
+          .send({
+            password: "any",
+          })
+          .expect(400)
+          .expect(request => {
+            expect(request.body.error).toEqual("Missing param: username");
+          });
+      });
+    });
   });
 });
