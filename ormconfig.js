@@ -5,7 +5,9 @@ let config = {};
 if (process.env.NODE_ENV?.toLowerCase() === "test") {
   config = {
     type: "postgres",
-    url: process.env.DOCKER_TEST_DB_URL,
+    url:
+      process.env.DOCKER_TEST_DB_URL ||
+      "postgres://admin:admin@localhost:5432/scraps",
     entities: [`src/core/infra/data/database/entities/**/*`],
     migrations: [`src/core/infra/data/database/migrations/**/*`],
   };
