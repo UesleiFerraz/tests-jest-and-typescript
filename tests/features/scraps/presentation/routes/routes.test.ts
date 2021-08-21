@@ -161,7 +161,6 @@ describe("Scrap routes", () => {
         .post("/scraps")
         .send({
           title: "any_title",
-          userUid: user.uid,
         })
         .expect(400)
         .expect(request => {
@@ -183,42 +182,59 @@ describe("Scrap routes", () => {
           expect(request.body.error).toEqual("you must authenticate first");
         });
     });
-  });
 
-  it("Should return 200 and an updated scrap if valid data is provided", async () => {
-    const scrap = await makeScrap();
-    jest
-      .spyOn(UserAuthMiddleware.prototype, "handle")
-      .mockReturnValue(ok({ userUid: scrap.userUid }));
-    jest.spyOn(ScrapRepository.prototype, "getAll").mockResolvedValue([scrap]);
-    jest.spyOn(CacheRepository.prototype, "setex").mockResolvedValue(null);
+    it("Should return 400 if uid is invalid", async () => {
+      const user = await makeUser();
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(ok({ userUid: user.uid }));
 
-    await supertest(server)
-      .put(`/scraps/${scrap.uid}`)
-      .expect(200)
-      .send({ title: "new_title", description: "new_description" })
-      .expect(request => {
-        expect(request.body.scrap.uid).toEqual(scrap.uid);
-        expect(request.body.scrap.title).toEqual("new_title");
-        expect(request.body.scrap.description).toEqual("new_description");
-        expect(request.body.scrap.userUid).toEqual(scrap.userUid);
-      });
-  });
+      await supertest(server)
+        .put("/scraps/any_uid")
+        .send({ title: "any_title", description: "any_description" })
+        .expect(400)
+        .expect(request => {
+          expect(request.body.error).toEqual("Invalid param: uid");
+        });
+    });
 
-  it("Should return code 404 if doesn't find any scrap", async () => {
-    const user = await makeUser();
-    jest
-      .spyOn(UserAuthMiddleware.prototype, "handle")
-      .mockReturnValue(ok({ userUid: user.uid }));
-    jest.spyOn(ScrapRepository.prototype, "update").mockResolvedValue(null);
+    it("Should return 200 and an updated scrap if valid data is provided", async () => {
+      const scrap = await makeScrap();
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(ok({ userUid: scrap.userUid }));
+      jest
+        .spyOn(ScrapRepository.prototype, "getAll")
+        .mockResolvedValue([scrap]);
+      jest.spyOn(CacheRepository.prototype, "setex").mockResolvedValue(null);
 
-    await supertest(server)
-      .put(`/scraps/${user.uid}`)
-      .expect(404)
-      .send({ title: "any_title", description: "any_description" })
-      .expect(request => {
-        expect(request.body.error).toEqual("Data not found");
-      });
+      await supertest(server)
+        .put(`/scraps/${scrap.uid}`)
+        .expect(200)
+        .send({ title: "new_title", description: "new_description" })
+        .expect(request => {
+          expect(request.body.scrap.uid).toEqual(scrap.uid);
+          expect(request.body.scrap.title).toEqual("new_title");
+          expect(request.body.scrap.description).toEqual("new_description");
+          expect(request.body.scrap.userUid).toEqual(scrap.userUid);
+        });
+    });
+
+    it("Should return code 404 if doesn't find any scrap", async () => {
+      const user = await makeUser();
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(ok({ userUid: user.uid }));
+      jest.spyOn(ScrapRepository.prototype, "update").mockResolvedValue(null);
+
+      await supertest(server)
+        .put(`/scraps/${user.uid}`)
+        .expect(404)
+        .send({ title: "any_title", description: "any_description" })
+        .expect(request => {
+          expect(request.body.error).toEqual("Data not found");
+        });
+    });
   });
 
   describe("/Delete scrap", () => {
@@ -232,6 +248,21 @@ describe("Scrap routes", () => {
         .expect(401)
         .expect(request => {
           expect(request.body.error).toEqual("you must authenticate first");
+        });
+    });
+
+    it("Should return 400 if uid is invalid", async () => {
+      const user = await makeUser();
+      jest
+        .spyOn(UserAuthMiddleware.prototype, "handle")
+        .mockReturnValue(ok({ userUid: user.uid }));
+
+      await supertest(server)
+        .delete("/scraps/any_uid")
+        .send({ title: "any_title", description: "any_description" })
+        .expect(400)
+        .expect(request => {
+          expect(request.body.error).toEqual("Invalid param: uid");
         });
     });
 

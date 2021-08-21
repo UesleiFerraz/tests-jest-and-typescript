@@ -30,15 +30,13 @@ export class AuthUserController implements Controller {
 
       const secret = process.env.SECRET || "123";
       let token: string | undefined;
-      if (user.password) {
-        const isValidPassword = await bcrypt.compare(password, user.password);
+      const isValidPassword = await bcrypt.compare(password, user.password);
 
-        if (!isValidPassword) {
-          return forbidden();
-        }
-
-        token = jwt.sign({ uid: user.uid }, secret, { expiresIn: "1h" });
+      if (!isValidPassword) {
+        return forbidden();
       }
+
+      token = jwt.sign({ uid: user.uid }, secret, { expiresIn: "1h" });
 
       return ok({ token });
     } catch (error) {

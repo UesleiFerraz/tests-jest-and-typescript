@@ -1,8 +1,4 @@
-import {
-  UserEntity,
-  UserRepository,
-} from "../../../../../src/features/users/infra";
-import { User } from "../../../../../src/core/domain";
+import { UserRepository } from "../../../../../src/features/users/infra";
 import { ok, notFound, forbidden } from "../../../../../src/core/presentation";
 import { AuthUserController } from "./../../../../../src/features/users/presentation/controllers/auth-user.controller";
 import jwt from "jsonwebtoken";
@@ -28,11 +24,6 @@ const makeRequest = () => {
     },
   };
 };
-
-const makeResult = (): Omit<User, "password"> => ({
-  uid: "any_uid",
-  username: "any_username",
-});
 
 describe("UserAuth controller", () => {
   beforeEach(() => {

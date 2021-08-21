@@ -1,7 +1,7 @@
 import { Connection, createConnection } from "typeorm";
 
 export default class Database {
-  private static connection: Connection;
+  private static connection: Connection | null;
 
   public static getConnection(): Connection {
     if (!Database.connection) {
@@ -12,12 +12,8 @@ export default class Database {
 
   public async openConnection(): Promise<void> {
     if (!Database.connection) {
-      try {
-        Database.connection = await createConnection();
-        console.log("📦 DATABASE CONNECTED");
-      } catch (error) {
-        console.error(error);
-      }
+      Database.connection = await createConnection();
+      console.log("📦 DATABASE CONNECTED");
     }
   }
 
@@ -27,5 +23,9 @@ export default class Database {
     }
 
     await Database.connection.close();
+  }
+
+  public set connection(connection: Connection | null) {
+    Database.connection = connection;
   }
 }

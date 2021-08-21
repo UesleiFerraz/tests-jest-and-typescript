@@ -9,6 +9,7 @@ import { CacheRepository, ScrapRepository } from "../../infra";
 import { ScrapController } from "../controllers";
 import { ScrapMiddleware } from "../middlewares";
 import { UserAuthMiddleware } from "../middlewares/user-auth.middleware";
+import { UuidValidatorMiddleware } from "../middlewares/uuid-validator.middleware";
 
 const makeController = (): MVCController => {
   const repository = new ScrapRepository();
@@ -27,7 +28,10 @@ export default class ScrapRoutes {
 
     routes.get(
       "/scraps/:uid",
-      middlewareAdapter(new UserAuthMiddleware()),
+      [
+        middlewareAdapter(new UserAuthMiddleware()),
+        middlewareAdapter(new UuidValidatorMiddleware()),
+      ],
       routerMvcAdapter(makeController(), EMVC.SHOW)
     );
 
@@ -45,13 +49,17 @@ export default class ScrapRoutes {
       [
         middlewareAdapter(new UserAuthMiddleware()),
         middlewareAdapter(new ScrapMiddleware()),
+        middlewareAdapter(new UuidValidatorMiddleware()),
       ],
       routerMvcAdapter(makeController(), EMVC.UPDATE)
     );
 
     routes.delete(
       "/scraps/:uid",
-      middlewareAdapter(new UserAuthMiddleware()),
+      [
+        middlewareAdapter(new UserAuthMiddleware()),
+        middlewareAdapter(new UuidValidatorMiddleware()),
+      ],
       routerMvcAdapter(makeController(), EMVC.DELETE)
     );
   }

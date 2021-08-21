@@ -5,6 +5,7 @@ export const middlewareAdapter = (middleware: any) => {
   return async (request: Request, response: Response, next: NextFunction) => {
     const requestMiddleware: HttpMiddleware = {
       headers: request.headers,
+      params: request.params,
       body: request.body,
     };
 
